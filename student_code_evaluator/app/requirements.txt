@@ -2,6 +2,6 @@ streamlit>=1.12.0
 chromadb
 google-generativeai
 PyMuPDF
-langchain>=0.2.0
-langchain-google-genai==2.1.5
+langchain
+langchain-google-genai
 nbformat
