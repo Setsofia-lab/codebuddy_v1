@@ -1,0 +1,267 @@
+﻿Grading Rubrics for Coding Assignments and Projects
+In computer science education, rubrics often assess core dimensions like program completeness (meeting assignment requirements), correctness (passing tests), design quality (modularity and structure), and coding style/readability (Rubric for Programming Assignments — CAPP 30122 - Computer Science with Applications II documentation) (Rubric for Programming Assignments — CAPP 30122 - Computer Science with Applications II documentation). For example, one rubric component called Completeness is measured by automated tests that check whether the code implements all required tasks (Rubric for Programming Assignments — CAPP 30122 - Computer Science with Applications II documentation), while Style evaluates adherence to a coding style guide and the quality of documentation (e.g. having docstrings for functions and clear code) (Rubric for Programming Assignments — CAPP 30122 - Computer Science with Applications II documentation). These general criteria are adapted to each level and domain. A Data Structures rubric, for instance, may include categories such as code compilation/execution, correct use of data structures, and documentation. Machine Learning rubrics emphasize data preprocessing, model choice, and evaluation metrics, while Web Development rubrics focus on HTML/CSS structure, interactivity, and visual design. Below are example rubrics, using the terms Poor, Fair, and Excellent for performance levels, for beginner, intermediate, and advanced projects in Data Structures, Machine Learning, and Web Development.
+Beginner Level
+Data Structures
+* Functionality & Correctness:
+
+   * Poor: Code fails to compile or run, or produces incorrect output for most test cases (e.g. crashes or outputs nothing). Major assignment requirements are not met.
+
+   * Fair: Code compiles and runs but only covers some of the required functionality. It produces correct output on simple or provided examples but fails on edge cases or certain inputs. Some assignment requirements are partially satisfied.
+
+   * Excellent: Code compiles and runs without errors and meets all basic requirements. It correctly implements the requested functionality and produces correct output for all tested cases.
+
+      * Use of Data Structures:
+
+         * Poor: Uses inappropriate or overly simple data structures (e.g. treating all data as plain arrays or using multiple loops when a list or dict would be better). May misuse built-in structures (e.g. confusing lists vs. dictionaries) or hard-code values instead of data structures.
+
+         * Fair: Demonstrates basic understanding by using simple data structures (arrays, lists) appropriately for some tasks, but may use them inconsistently or miss opportunities. Minor misuse of structures or some unnecessary work.
+
+         * Excellent: Consistently chooses and uses the correct basic data structures (arrays/lists, dictionaries/maps, simple classes) for the problem. Data is stored and accessed efficiently (e.g. using a list to collect items, a dict for lookups). Structures are appropriate to the task and simplify the code.
+
+            * Code Organization & Modularity:
+
+               * Poor: Almost all code is written in a single block or a few monolithic routines. Little or no use of functions or modular structure. Code is hard to navigate, with many repeated code fragments.
+
+               * Fair: Some functions or classes are used, but the organization is still basic. Functions may be too long or only one function used for multiple tasks. There may be some duplicate code. Modularity is partially applied.
+
+               * Excellent: Code is broken into well-named, focused functions or classes. Each function has a clear purpose. The solution is logically organized (e.g. separate functions for input, processing, and output). This makes the code easy to follow and reuse.
+
+                  * Style & Readability:
+
+                     * Poor: Variable and function names are confusing or meaningless. Indentation and formatting are inconsistent. Code has no comments or documentation. The code is hard to read due to long lines, lack of whitespace, or inconsistent style.
+
+                     * Fair: Generally follows basic style conventions (reasonable naming, consistent indentation), but with some lapses. A few comments or documentation may be present. The code is mostly readable, though it may have minor style issues (e.g. inconsistent spacing or naming that could be clearer).
+
+                     * Excellent: Code uses clear, descriptive names for variables and functions. Formatting is consistent (proper indentation, spacing). The code is easy to read and understand. Simple comments or docstrings are provided where needed to explain non-obvious logic.
+
+                        * Documentation & Comments:
+
+                           * Poor: No comments or documentation provided. It is unclear what the code or specific sections are meant to do. New readers would struggle to follow the logic.
+
+                           * Fair: Basic comments or a brief header are present (e.g. a description at the top of the file). Some comments explain sections of code, but they may be incomplete or too general. It explains some logic but leaves parts unclear.
+
+                           * Excellent: Clear documentation is provided. There is a header or docstring that describes the program purpose. Key variables and functions have comments or docstrings explaining their intent. Comments are meaningful and help a reader understand the flow or any complex parts of the code.
+
+Machine Learning
+                              * Data Handling & Preprocessing:
+
+                                 * Poor: Data is not cleaned or preprocessed correctly. The code may not load or split the dataset properly. Handles few or no data transformations (e.g. no handling of missing values or encoding). The data pipeline may be incorrect or incomplete, causing errors.
+
+                                 * Fair: Loads data correctly and does some basic preprocessing (e.g. splitting into train/test, handling some missing values or basic encoding). However, some preprocessing steps might be missing or only partially applied (e.g. only one-hot encoding applied partially, or not scaling when needed).
+
+                                 * Excellent: Data is properly loaded and thoroughly preprocessed. All necessary steps are taken: missing values handled, categorical variables encoded, features scaled or normalized as appropriate. The train/test (or cross-validation) split is correctly performed and reproducible (e.g. with a fixed random seed). Data processing steps are justified and correctly implemented.
+
+                                    * Model Implementation & Selection:
+
+                                       * Poor: Uses an inappropriate model or applies it incorrectly. For example, a simple linear model for clearly non-linear data without justification, or misuses the chosen algorithm (missing parameters, wrong library calls). Code does not build or train the model correctly.
+
+                                       * Fair: Chooses a reasonable model for the task and implements it using standard libraries. The model is trained, but selection may lack justification or optimization. Some hyperparameters are set but not tuned systematically. The implementation mostly works, though it may be suboptimal or incomplete.
+
+                                       * Excellent: Selects an appropriate algorithm for the problem (with rationale). Implements it correctly using suitable tools (e.g. scikit-learn, TensorFlow). If multiple models are tried, a clear choice is made based on performance. The chosen model is correctly trained on the data. Good practices like fixing random seeds for reproducibility are followed.
+
+                                          * Model Evaluation & Metrics:
+
+                                             * Poor: Evaluation is minimal or incorrect. May only report accuracy even if it’s not suitable, or uses an incorrect train/test split. No clear test set or cross-validation. Results may not be clearly calculated or interpreted.
+
+                                             * Fair: Uses some standard evaluation (e.g. correct train-test split or cross-validation and common metrics like accuracy or RMSE). However, evaluation might be incomplete (e.g. uses only one metric or one split, or misses key metrics for the problem). Presents basic results but with limited analysis (e.g. “accuracy = 85%” with no further discussion).
+
+                                             * Excellent: Employs appropriate evaluation methods thoroughly. This includes a clear train/test (or validation) separation, and use of relevant metrics (accuracy, precision/recall, F1, ROC-AUC, etc., as appropriate). If applicable, cross-validation or learning curves are used. The results are interpreted correctly (e.g. confusion matrix discussion, analysis of errors, comparison of metrics) and linked back to the problem objectives.
+
+                                                * Code Quality & Documentation:
+
+                                                   * Poor: Code is disorganized or ad-hoc (e.g. everything in one script without structure). Little or no comments. Variable names are vague. It is hard to follow the experimental steps. The project is not easily reproducible.
+
+                                                   * Fair: Code is organized into sections or functions (e.g. separate code for data loading, model training, evaluation). Some comments explain what each part does. There is some structure (for example, a main function or notebook sections). Reproducibility is partially addressed (maybe notes on random seed but no requirements file).
+
+                                                   * Excellent: Code is cleanly organized (functions, classes, or well-delineated notebook cells for each step: data processing, modeling, evaluation). Variables and functions have descriptive names. Important steps are commented or documented (either as inline comments or in a separate report). Any non-obvious decision is explained. The environment is reproducible (e.g. requirements are noted, random seeds set).
+
+                                                      * Interpretation & Analysis:
+
+                                                         * Poor: No interpretation of the results is provided. The report just states metrics without discussing them. Does not connect the model outcomes to the problem.
+
+                                                         * Fair: Provides a basic interpretation of the results (e.g. “The accuracy is high, so the model is good”). Some insights might be mentioned (e.g. “Feature X seems important”) but these are superficial. Explanation of why the model performed that way is limited.
+
+                                                         * Excellent: Offers thoughtful analysis of the results. Discusses what the metrics mean in context (e.g. trade-offs between precision and recall, what false positives mean for the problem). Comments on which features are important, why certain errors occur, or how the model could be improved. Conclusions are linked to the project goals.
+
+Web Development
+                                                            * HTML/CSS Structure:
+
+                                                               * Poor: HTML lacks proper structure or semantic tags (e.g. everything in <div>s without headings or lists). CSS is missing or inline in HTML without organization. The page fails to display correctly.
+
+                                                               * Fair: Uses basic HTML structure (headers, paragraphs, simple lists). CSS styling is applied but may be inconsistent or overly simplistic. The layout is functional but might have minor issues (e.g. spacing problems or inconsistent colors/styles). Some semantic elements (like <header>, <footer>) may be missing.
+
+                                                               * Excellent: HTML is well-structured and semantic (using <nav>, <header>, <article>, etc.). CSS is organized (external stylesheet or scoped <style>), with consistent styling. Layout is clean and maintains visual hierarchy. Code separation is clear (HTML for structure, CSS for style) and uses standards correctly.
+
+                                                                  * Layout & Design Consistency:
+
+                                                                     * Poor: The page layout is cluttered or broken (elements overlap, inconsistent margins/padding). There is no visual consistency (random fonts, colors). It may not be visually appealing or easy to read.
+
+                                                                     * Fair: The layout is mostly consistent but has a few alignment or style issues. There is a reasonable color scheme and font choice, but some elements might look out of place. The site is usable, though design details could be improved (e.g. slightly uneven spacing or color mismatch).
+
+                                                                     * Excellent: The site has a cohesive and visually consistent design. Colors, fonts, and spacing are used thoughtfully and uniformly. The layout is responsive (works on different screen sizes) or at least looks good on standard screens. Elements align properly, and the design is polished (e.g. consistent margins, use of grid or flexbox for structure).
+
+                                                                        * JavaScript Interactivity (if applicable):
+
+                                                                           * Poor: No interactive features when they are expected, or scripts cause errors. For example, buttons or forms do nothing or throw JavaScript errors. Event handling is missing or incorrect.
+
+                                                                           * Fair: Basic interactivity is implemented. For instance, form inputs are validated on the client side or buttons trigger some action. However, there may be bugs or missing functionality (e.g. one feature works but another planned one is incomplete). Some dynamic updates (like showing/hiding sections) work.
+
+                                                                           * Excellent: All interactive components function correctly. JavaScript is used effectively for dynamic behavior (e.g. form validation, AJAX calls, animations) without errors. Code is modular (functions or classes for events) and could include use of libraries/frameworks properly (e.g. jQuery or React where expected). The interactions enhance the user experience.
+
+                                                                              * Code Quality & Readability:
+
+                                                                                 * Poor: HTML, CSS, or JS code is hard to read. Indentation and formatting are inconsistent. Styles or scripts are duplicated or inline everywhere. File organization (if multiple files) is poor.
+
+                                                                                 * Fair: Code follows some conventions (consistent indentation, some comments). There may be some inline styles or scripts, but generally files are separate. CSS uses classes/IDs somewhat consistently. The code is mostly readable, but could be cleaner (e.g. minor redundancy or vague class names).
+
+                                                                                 * Excellent: Code is well-organized and readable. HTML, CSS, and JavaScript are in separate files (or clearly separated). Class and ID names are meaningful. Indentation and formatting are consistent. There are no unnecessary repetitions, and any scripts are well-structured. Comments or documentation explain complex sections (e.g. a tricky CSS layout or JS function).
+
+Intermediate Level
+Data Structures
+                                                                                    * Correctness & Completeness:
+
+                                                                                       * Poor: The solution is incomplete or incorrect. Key functions are missing or do not work for many inputs. The program fails on edge cases and does not fully satisfy the assignment requirements.
+
+                                                                                       * Fair: The program implements most required features and works for common cases. However, it may have some logical errors or fail on certain inputs (e.g. edge cases or larger inputs). Most test cases pass, but some special cases are not handled.
+
+                                                                                       * Excellent: The implementation fully meets all requirements. It handles typical and edge cases correctly. The program is robust: no silent failures or incorrect outputs. It passes all provided tests and any reasonable additional tests for correctness.
+
+                                                                                          * Use of Data Structures & Algorithms:
+
+                                                                                             * Poor: Uses inefficient or inappropriate data structures (e.g. arrays where a hash table or tree would be more suitable). Key operations are not well-optimized (e.g. unnecessary linear searches in loops). The code ignores built-in or language features that simplify the task.
+
+                                                                                             * Fair: Generally uses suitable data structures (arrays, lists, basic trees, hash maps) but may not always pick the optimal one. Some algorithms are implemented properly (e.g. simple sorting/searching), but there may be inefficiencies (like an $O(n^2)$ approach when $O(n \log n)$ exists). The solution is correct but not fully efficient.
+
+                                                                                             * Excellent: Chooses and implements advanced or efficient data structures correctly (e.g. balanced trees, heaps, graphs as appropriate). The algorithms are optimal for the task (e.g. using a quicksort instead of a naive sort, or using a priority queue for scheduling). The code demonstrates understanding of data structure strengths (e.g. using a set for membership checks).
+
+                                                                                                * Algorithmic Efficiency:
+
+                                                                                                   * Poor: The solution is highly inefficient. It may have nested loops or recursive calls that cause performance problems on moderately-sized inputs. There is no consideration of time or space complexity.
+
+                                                                                                   * Fair: Reasonable efficiency is achieved, but there are clear opportunities for improvement. For example, the algorithm might work fine for small inputs but slows down significantly for larger inputs. Some effort is made to consider complexity (e.g. avoiding obvious inefficiencies), but not fully optimized.
+
+                                                                                                   * Excellent: Algorithms are efficient and scalable. Time and space complexity are appropriate for the problem size (e.g. linear or logarithmic solutions where expected). The code avoids unnecessary work (no redundant calculations), and algorithmic optimizations (like caching or better search methods) are applied.
+
+                                                                                                      * Code Design & Modularity:
+
+                                                                                                         * Poor: Very little modularity. The program logic is monolithic or duplicated in multiple places. There is poor separation between different concerns (e.g. data handling mixed with user interface).
+
+                                                                                                         * Fair: Some separation of concerns exists. The code uses multiple functions or classes, but they may not be ideally organized (for example, some modules do too many things, or related functions are scattered). The overall structure works but could be refactored for clarity.
+
+                                                                                                         * Excellent: The solution is well-designed. Functions, classes, or modules each have a clear responsibility. For example, data structures might be implemented as separate classes or modules, and helper functions are used judiciously. This makes the code easy to maintain and extend.
+
+                                                                                                            * Testing & Robustness:
+
+                                                                                                               * Poor: No tests provided, and common errors (like invalid inputs) are not handled. The program may crash or behave unpredictably on unexpected input.
+
+                                                                                                               * Fair: A set of basic tests (or examples) is provided and passes, but testing is not comprehensive. The code may handle typical inputs well but could fail silently on edge cases. Basic error handling exists (e.g. checks for empty input), but some cases are not covered.
+
+                                                                                                               * Excellent: Thorough testing is evident. The submission includes unit tests or example cases that cover normal and edge cases. The code includes error checking (e.g. input validation) and handles exceptions gracefully. It is robust against invalid or extreme inputs.
+
+                                                                                                                  * Style & Documentation:
+
+                                                                                                                     * Poor: Very little or no documentation. Comments (if any) are vague or missing. The coding style (naming, formatting) is inconsistent. It is difficult to understand the code without additional explanation.
+
+                                                                                                                     * Fair: Moderate documentation: key functions and modules have docstrings or comments, but some parts lack explanation. Variable/function names are somewhat descriptive. The style mostly follows conventions, with only minor deviations.
+
+                                                                                                                     * Excellent: Code is professional-quality. Every major function/class has an appropriate docstring explaining purpose, parameters, and return values. Comments clarify non-obvious logic. The style is consistent and matches common guidelines (e.g. consistent indentation, descriptive names throughout).
+
+Machine Learning
+                                                                                                                        * Data Preprocessing & Feature Engineering:
+
+                                                                                                                           * Poor: Minimal or no feature engineering. Data cleaning is shallow or incorrect (e.g. ignoring missing values or encoding issues). Important preprocessing steps (scaling, normalization, encoding) are missing, leading to poor data quality.
+
+                                                                                                                           * Fair: Performs basic preprocessing (handling missing values, encoding categorical variables). Some feature engineering is done (e.g. selecting a few derived features). However, key improvements may be missing (e.g. not normalizing skewed data when needed). The data pipeline works but may not extract full signal.
+
+                                                                                                                           * Excellent: Applies comprehensive preprocessing. Missing data are handled appropriately, categorical data are correctly encoded, features are scaled or normalized as needed. Effective feature engineering is evident (e.g. creating meaningful combined features, dimensionality reduction). Justifications for chosen transformations are provided.
+
+                                                                                                                              * Model Selection & Rationale:
+
+                                                                                                                                 * Poor: The chosen model is ill-suited to the problem (e.g. using linear regression for clearly non-linear data) or arbitrary. Little to no reasoning is given for the choice. The model may not train correctly or is underfitting/overfitting badly.
+
+                                                                                                                                 * Fair: Selects a plausible model (e.g. decision tree for classification) and implements it correctly. Some rationale is mentioned (perhaps one sentence). May try a couple of models and choose one based on initial results. Some tuning is attempted but not systematic.
+
+                                                                                                                                 * Excellent: Chooses a model (or ensemble of models) well-justified by problem characteristics (e.g. linear vs. non-linear, data size, interpretability needs). Multiple candidate models may be compared. The choice is explained clearly. The model is implemented correctly with proper parameter initialization.
+
+                                                                                                                                    * Hyperparameter Tuning & Optimization:
+
+                                                                                                                                       * Poor: Uses default settings without tuning, or randomly picks parameters. No systematic search or justification. The model performance is likely suboptimal.
+
+                                                                                                                                       * Fair: Attempts some tuning (e.g. manually adjusting parameters or using one round of grid search with limited range). There is awareness of important hyperparameters, and the code shows some effort to improve them. The final model uses better-tuned parameters but the process may not be fully thorough.
+
+                                                                                                                                       * Excellent: Conducts systematic hyperparameter tuning (e.g. grid search, randomized search, cross-validation). Explores multiple parameters and documents the search process. The final model’s parameters are well-justified by the tuning results. Training is efficient (e.g. early stopping, validation sets used properly).
+
+                                                                                                                                          * Evaluation & Metrics:
+
+                                                                                                                                             * Poor: Relies on a single, possibly inappropriate metric (e.g. accuracy for imbalanced classes). No evaluation on a held-out test set or misuse of train/test data (e.g. evaluating on training data only). No analysis of results.
+
+                                                                                                                                             * Fair: Uses one or two relevant metrics (e.g. accuracy plus precision/recall for classification) and a proper train/test split or cross-validation. Presents results clearly (tables or charts). However, interpretation is basic (e.g. only stating metric values). Some discussion of metric choices or what they imply for the task is included but may lack depth.
+
+                                                                                                                                             * Excellent: Employs multiple relevant metrics and evaluation techniques. For example, classification may include confusion matrices, precision, recall, F1, ROC curves, etc. Regression includes R², RMSE, MAE, etc. Cross-validation or bootstrap methods are used to assess model stability. Results are thoroughly analyzed: charts and tables are used effectively, and metric trade-offs are discussed in context.
+
+                                                                                                                                                * Code Organization & Reproducibility:
+
+                                                                                                                                                   * Poor: Everything is in one long script or notebook with no structure. It may not be clear how to run the code or reproduce results (e.g. missing instructions or fixed file paths). Randomness is uncontrolled.
+
+                                                                                                                                                   * Fair: Code has some structure (e.g. functions or classes). Basic instructions (comments or README) are provided. An outline is present (data loading, training, evaluation in order). Random seeds may be set, but environment dependencies (like library versions) are not documented.
+
+                                                                                                                                                   * Excellent: Code is well-structured for reproducibility. There is a clear sequence of steps (often separated by functions or sections) that someone else could follow. Dependencies are listed (e.g. requirements.txt or environment specified). Random seeds are set, and the process yields the same results on re-run. If using notebooks, sections are logically ordered and documented.
+
+                                                                                                                                                      * Insights & Discussion:
+
+                                                                                                                                                         * Poor: The submission ends after reporting metrics. There is no attempt to draw conclusions or relate results back to the problem.
+
+                                                                                                                                                         * Fair: Some insights are provided (e.g. noting which features seem important or suggesting why a model performed as it did). The discussion may be somewhat generic (e.g. stating that more data could improve the model). It covers basic lessons learned but without depth.
+
+                                                                                                                                                         * Excellent: Delivers a thoughtful interpretation of findings. It might identify which features drive performance, explain any surprising results, and suggest concrete improvements. The discussion connects back to the original problem context. For example, “Model X performed better possibly because it handles feature Y well,” and addresses limitations or ethical considerations if relevant.
+
+Web Development
+                                                                                                                                                            * Frontend Functionality & Interactivity:
+
+                                                                                                                                                               * Poor: Interactive elements (forms, buttons, dynamic content) do not work or are missing. Errors occur (e.g. JavaScript crashes). The site feels static when interactivity is expected.
+
+                                                                                                                                                               * Fair: Most interactive features function. For example, forms submit correctly, basic event handlers work. Some interactive UI elements (dropdowns, tabs, simple animations) work, but there may be minor glitches or missing polish.
+
+                                                                                                                                                               * Excellent: All interactive components work smoothly. Client-side form validation, dynamic content updates (AJAX or equivalent), and user interactions (clicks, animations) perform as intended. The interactivity enhances the user experience without errors or delays.
+
+                                                                                                                                                                  * Backend / Full-Stack Integration:
+
+                                                                                                                                                                     * Poor: If required, backend or server-side features are missing or non-functional. Data flow is unclear or not implemented (e.g. no database or API integration when expected). The project is essentially only static pages.
+
+                                                                                                                                                                     * Fair: Implements basic backend or database features. For example, a simple REST API or data persistence is present. The frontend communicates with the backend (e.g. via fetch/AJAX). However, error handling or advanced backend logic may be incomplete.
+
+                                                                                                                                                                     * Excellent: The backend is fully implemented and well-integrated. Data is correctly stored/retrieved from a database. API endpoints are logically structured and secure. The frontend and backend communicate seamlessly. For example, form submissions are processed on the server, and dynamic data is fetched/updated without full page reloads.
+
+                                                                                                                                                                        * UI/UX Design & Responsiveness:
+
+                                                                                                                                                                           * Poor: The site is hard to use on different devices. Layout breaks on smaller screens. Navigation is confusing or missing. There is little attention to user-friendly design.
+
+                                                                                                                                                                           * Fair: The site is mostly usable. It adapts to different screen sizes (responsive design) to some extent (for instance, menu collapses on mobile). The design has a logical flow and navigation, but may not be fully optimized for all devices or may lack some visual polish.
+
+                                                                                                                                                                           * Excellent: The user interface is intuitive and responsive. The layout adjusts gracefully for mobile, tablet, and desktop (e.g. using media queries or a responsive framework). Navigation is clear and consistent. The design enhances usability (clear calls-to-action, readable fonts, appropriate use of whitespace).
+
+                                                                                                                                                                              * Performance & Best Practices:
+
+                                                                                                                                                                                 * Poor: The page loads very slowly or behaves sluggishly. Images or assets are not optimized, and there is no consideration for performance. Security best practices are ignored (e.g. plain-text storage of passwords, missing input sanitization).
+
+                                                                                                                                                                                 * Fair: Performance is acceptable for a small project. Images and resources are reasonably optimized (e.g. compressed images). Some best practices are followed (e.g. environment variables for configuration), but a few issues exist (e.g. minor security risks, no caching strategy).
+
+                                                                                                                                                                                 * Excellent: Performance and best practices are prioritized. Assets are optimized (compressed images, minified code). Security measures are implemented (input validation/sanitization, use of HTTPS, secure authentication). The project may use techniques like client-side caching or efficient database queries. Code follows web standards and avoids known vulnerabilities.
+
+                                                                                                                                                                                    * Code Organization & Testing:
+
+                                                                                                                                                                                       * Poor: The codebase is disorganized (all HTML/JS/CSS tangled in one file, no folder structure). No version control or deployment setup. No tests are written.
+
+                                                                                                                                                                                       * Fair: Code is organized into multiple files with a clear structure (e.g. separate directories for scripts, styles, assets). Basic tests or manual checks are performed. There may be a simple README or instructions.
+
+                                                                                                                                                                                       * Excellent: The project has a clean architecture. Frontend components (if any) are modular (e.g. React components, or organized script modules). Backend code is structured by routes/controllers/models (if applicable). Automated tests (unit tests for functions, or integration tests for APIs) are present and passing. The project includes documentation on how to run or deploy (README, environment setup).
+
+                                                                                                                                                                                          * Overall Quality & Completeness:
+
+                                                                                                                                                                                             * Poor: The project meets only a few requirements. Many features from the assignment prompt are missing or incomplete. There are numerous bugs or broken links.
+
+                                                                                                                                                                                             * Fair: Most major requirements are implemented. The site is functional and mostly complete, though minor features or pages may be missing. There may be small bugs (e.g. a link that doesn’t work) but the core application runs.
+
+                                                                                                                                                                                             * Excellent: All specified requirements and additional enhancements are fully implemented. The project is polished and cohesive. There are no broken links or obvious bugs. The application feels complete and professional.
+
+Sources: Rubric categories above are informed by common academic guidelines. For example, a computer science rubric may split grades among Completeness (meeting specification via tests), Correctness, Design/Style, and Documentation (Rubric for Programming Assignments — CAPP 30122 - Computer Science with Applications II documentation) (Rubric for Programming Assignments — CAPP 30122 - Computer Science with Applications II documentation). A sample Data Structures rubric explicitly includes criteria like code compilation/execution and documentation. These examples guide the rubric elements at each level and domain.
