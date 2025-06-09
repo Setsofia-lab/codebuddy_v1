@@ -53,7 +53,7 @@ def generate_llm_response(messages, llm, system_prompt):
         return "An error occurred during the response generation."
 
 # --- Streamlit UI ---
-st.title("Welcome to the Student Code Evaluator")
+st.title("Welcome to codebuddy - Code Evaluator")
 
 st.write("Please submit your code file below for evaluation and feedback.")
 
@@ -221,5 +221,5 @@ st.markdown("---")
 st.subheader("Provide Feedback")
 st.write("We appreciate your feedback! Please fill out this form to help us improve the app.")
 # Replace with your actual Google Form link
-google_form_link = "https://forms.gle/HMKiUcCh5bPPH8HE8"
+google_form_link = "https://forms.gle/VKvZhBuJteNrcT4H8"
 st.markdown(f"[Feedback Form]({google_form_link})")
