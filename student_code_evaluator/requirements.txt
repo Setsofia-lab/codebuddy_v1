@@ -3,5 +3,5 @@ chromadb
 google-generativeai
 PyMuPDF
 langchain
-langchain-google-genai
+langchain-google-genai==0.0.16
 nbformat
