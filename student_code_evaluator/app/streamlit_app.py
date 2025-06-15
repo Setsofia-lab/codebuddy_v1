@@ -1,5 +1,8 @@
 import streamlit as st
 import os
+import requests
+import uuid
+import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 
@@ -24,6 +27,22 @@ def get_gemini_llm():
         return None
 
 llm = get_gemini_llm()
+
+# --- Backend Integration ---
+# Use host.docker.internal to connect to the host machine from within the Docker container
+BACKEND_URL = "http://host.docker.internal:5000" # Replace with your backend URL in deployment
+
+def send_conversation_to_backend(conversation_id, messages):
+    """Sends conversation data to the backend API."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/save_conversation", json={
+            "conversation_id": conversation_id,
+            "messages": messages
+        })
+        response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        st.sidebar.success("Conversation saved to backend.") # Optional: show success message
+    except requests.exceptions.RequestException as e:
+        st.sidebar.error(f"Error saving conversation to backend: {e}") # Optional: show error message
 
 # --- LLM Response Function ---
 def generate_llm_response(messages, llm, system_prompt):
@@ -65,6 +84,12 @@ if "messages" not in st.session_state:
 if "evaluation_started" not in st.session_state:
     st.session_state.evaluation_started = False
 
+if "evaluation_complete" not in st.session_state:
+    st.session_state.evaluation_complete = False
+
+if "show_feedback_form" not in st.session_state:
+    st.session_state.show_feedback_form = False
+
 # File uploader for student code submission
 uploaded_file = st.file_uploader("Upload your code file:", type=['py', 'ipynb', 'js', 'txt', 'matlab'])
 
@@ -74,9 +99,14 @@ if st.button("Start Evaluation"):
         # Read the content of the uploaded file
         student_code = uploaded_file.getvalue().decode("utf-8")
 
+        # Reset evaluation complete and show feedback form states for a new evaluation
+        st.session_state.evaluation_complete = False
+        st.session_state.show_feedback_form = False
+
         # Clear previous messages and start a new conversation
         st.session_state.messages = []
         st.session_state.evaluation_started = True
+        st.session_state.conversation_id = str(uuid.uuid4()) # Generate unique conversation ID
         st.session_state.messages.append({"role": "user", "content": f"Student Code Submission:\n```\n{student_code}\n```"})
 
         # Define the system prompt internally
@@ -137,10 +167,19 @@ if st.button("Start Evaluation"):
             initial_feedback = generate_llm_response(st.session_state.messages, llm, system_prompt)
             st.session_state.messages.append({"role": "assistant", "content": initial_feedback})
         
+        # Save initial conversation to backend
+        send_conversation_to_backend(st.session_state.conversation_id, st.session_state.messages)
+
         # Force rerun to show the initial response
         st.rerun()
     else:
         st.warning("Please submit your code to start the evaluation.")
+
+# Button to trigger feedback form (appears after evaluation starts)
+if st.session_state.evaluation_started and not st.session_state.show_feedback_form:
+    if st.button("Provide Feedback"):
+        st.session_state.show_feedback_form = True
+        st.rerun()
 
 # Chat input for student responses - moved before displaying messages
 if st.session_state.evaluation_started and uploaded_file is not None:
@@ -148,6 +187,9 @@ if st.session_state.evaluation_started and uploaded_file is not None:
     if student_response:
         # Append user's response to the chat history
         st.session_state.messages.append({"role": "user", "content": student_response})
+
+        # Save user message to backend
+        send_conversation_to_backend(st.session_state.conversation_id, st.session_state.messages)
 
         # Define the system prompt internally (same as before)
         system_prompt = """Your Role: You are an AI Code Evaluation Assistant and Tutor. Your primary goal is to interact conversationally with a student about the code they have submitted for a specific assignment. You need to evaluate both the submitted code and the student's understanding of their own work and development process. Your ultimate aim is to provide constructive feedback, ensure the student understands why they are receiving a particular evaluation, identify areas for improvement, and reach a point where the student agrees with the final assessment before it is submitted to the instructor.
@@ -207,6 +249,9 @@ if st.session_state.evaluation_started and uploaded_file is not None:
             next_response = generate_llm_response(st.session_state.messages, llm, system_prompt)
             st.session_state.messages.append({"role": "assistant", "content": next_response})
         
+        # Save assistant message to backend
+        send_conversation_to_backend(st.session_state.conversation_id, st.session_state.messages)
+
         # Force rerun to show the new messages
         st.rerun()
 
@@ -216,10 +261,47 @@ if st.session_state.evaluation_started:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-# Feedback Form Link (Placeholder)
-st.markdown("---")
-st.subheader("Provide Feedback")
-st.write("We appreciate your feedback! Please fill out this form to help us improve the app.")
-# Replace with your actual Google Form link
-google_form_link = "https://forms.gle/VKvZhBuJteNrcT4H8"
-st.markdown(f"[Feedback Form]({google_form_link})")
+# Feedback Section (displayed in sidebar as a simulated pop-up)
+if st.session_state.show_feedback_form:
+    with st.sidebar:
+        st.subheader("Provide Feedback")
+        st.write("Please answer the following questions about your experience:")
+
+        # Feedback questions
+        q1 = st.text_input("1. How satisfied are you with the code evaluation?")
+        q2 = st.text_input("2. Was the feedback provided helpful?")
+        q3 = st.text_input("3. Was the conversation easy to follow?")
+        q4 = st.text_input("4. How likely are you to use this tool again?")
+        q5 = st.text_input("5. Do you have any suggestions for improvement?")
+        q6 = st.text_input("6. Any additional comments?")
+
+        # Button to submit feedback
+        if st.button("Submit Feedback"):
+            if st.session_state.evaluation_started and st.session_state.conversation_id:
+                feedback_data = {
+                    "q1": q1,
+                    "q2": q2,
+                    "q3": q3,
+                    "q4": q4,
+                    "q5": q5,
+                    "q6": q6
+                }
+                send_feedback_to_backend(st.session_state.conversation_id, feedback_data)
+                st.session_state.show_feedback_form = False # Hide form after submission
+                st.rerun()
+            else:
+                st.warning("Please start an evaluation before submitting feedback.")
+
+# Function to send feedback to the backend
+def send_feedback_to_backend(conversation_id, feedback):
+    """Sends feedback data to the backend API."""
+    try:
+        # Send feedback as a JSON string within the 'feedback' field
+        response = requests.post(f"{BACKEND_URL}/save_feedback", json={
+            "conversation_id": conversation_id,
+            "feedback": json.dumps(feedback) # Convert feedback dict to JSON string
+        })
+        response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        st.sidebar.success("Feedback submitted successfully.") # Optional: show success message
+    except requests.exceptions.RequestException as e:
+        st.sidebar.error(f"Error submitting feedback: {e}") # Optional: show error message
