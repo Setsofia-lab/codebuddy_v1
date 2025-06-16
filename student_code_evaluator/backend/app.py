@@ -121,6 +121,42 @@ def get_conversations():
     except sqlite3.Error as e:
         return jsonify({"error": f"Database error: {e}"}), 500
 
+@app.route('/delete_conversation/<conversation_id>', methods=['DELETE'])
+def delete_conversation(conversation_id):
+    db = get_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute("DELETE FROM conversations WHERE id = ?", (conversation_id,))
+        db.commit()
+        return jsonify({"success": True}), 200
+    except sqlite3.Error as e:
+        db.rollback()
+        return jsonify({"error": f"Database error: {e}"}), 500
+
+@app.route('/delete_messages/<conversation_id>', methods=['DELETE'])
+def delete_messages(conversation_id):
+    db = get_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute("DELETE FROM messages WHERE conversation_id = ?", (conversation_id,))
+        db.commit()
+        return jsonify({"success": True}), 200
+    except sqlite3.Error as e:
+        db.rollback()
+        return jsonify({"error": f"Database error: {e}"}), 500
+
+@app.route('/delete_feedback/<conversation_id>', methods=['DELETE'])
+def delete_feedback(conversation_id):
+    db = get_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute("DELETE FROM feedback WHERE conversation_id = ?", (conversation_id,))
+        db.commit()
+        return jsonify({"success": True}), 200
+    except sqlite3.Error as e:
+        db.rollback()
+        return jsonify({"error": f"Database error: {e}"}), 500
+
 
 if __name__ == '__main__':
     # In a real deployment, you'd use a production-ready server like Gunicorn or uWSGI
