@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS conversations;
 
 CREATE TABLE conversations (
     id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -19,6 +20,7 @@ CREATE TABLE messages (
 CREATE TABLE feedback (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     conversation_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
     feedback_text TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES conversations (id)

@@ -1,0 +1,72 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.2, pytest-8.3.4, pluggy-1.5.0
+Fugue tests will be initialized with options:
+rootdir: /Users/samuelsetsofia/dev/codebuddy_v1
+plugins: fugue-0.9.1, anyio-4.6.2.post1
+collected 2 items
+
+student_code_evaluator/tests/integration/test_integration.py EE          [100%]
+
+==================================== ERRORS ====================================
+_______________ ERROR at setup of test_save_and_get_conversation _______________
+
+    @pytest.fixture(scope="module", autouse=True)
+    def setup_backend():
+        # In a real scenario, you would start the backend server here
+        # and yield, then stop it in a teardown.
+        # For this example, we assume the backend is already running.
+>       wait_for_backend()
+
+student_code_evaluator/tests/integration/test_integration.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def wait_for_backend():
+        url = f"{BACKEND_URL}/get_conversations" # Use a simple endpoint to check
+        retries = 60  # Increased retries
+        sleep_time = 5 # Increased sleep time
+        for i in range(retries):
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    print("Backend is available.")
+                    return
+            except requests.exceptions.ConnectionError as e:
+                print(f"Waiting for backend, attempt {i+1}/{retries}... Error: {e}")
+                time.sleep(sleep_time)
+>       pytest.fail("Backend did not become available after multiple retries.")
+E       Failed: Backend did not become available after multiple retries.
+
+student_code_evaluator/tests/integration/test_integration.py:24: Failed
+______________ ERROR at setup of test_conversation_tagged_to_user ______________
+
+    @pytest.fixture(scope="module", autouse=True)
+    def setup_backend():
+        # In a real scenario, you would start the backend server here
+        # and yield, then stop it in a teardown.
+        # For this example, we assume the backend is already running.
+>       wait_for_backend()
+
+student_code_evaluator/tests/integration/test_integration.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def wait_for_backend():
+        url = f"{BACKEND_URL}/get_conversations" # Use a simple endpoint to check
+        retries = 60  # Increased retries
+        sleep_time = 5 # Increased sleep time
+        for i in range(retries):
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    print("Backend is available.")
+                    return
+            except requests.exceptions.ConnectionError as e:
+                print(f"Waiting for backend, attempt {i+1}/{retries}... Error: {e}")
+                time.sleep(sleep_time)
+>       pytest.fail("Backend did not become available after multiple retries.")
+E       Failed: Backend did not become available after multiple retries.
+
+student_code_evaluator/tests/integration/test_integration.py:24: Failed
+=========================== short test summary info ============================
+ERROR student_code_evaluator/tests/integration/test_integration.py::test_save_and_get_conversation
+ERROR student_code_evaluator/tests/integration/test_integration.py::test_conversation_tagged_to_user
+============================== 2 errors in 0.18s ===============================

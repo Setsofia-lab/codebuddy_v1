@@ -1,0 +1,131 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.2, pytest-8.3.4, pluggy-1.5.0
+Fugue tests will be initialized with options:
+rootdir: /Users/samuelsetsofia/dev/codebuddy_v1
+plugins: fugue-0.9.1, anyio-4.6.2.post1
+collected 14 items
+
+student_code_evaluator/tests/backend/test_app.py ..FFFFFF......          [100%]
+
+=================================== FAILURES ===================================
+________________________ test_save_conversation_success ________________________
+
+client = <FlaskClient <Flask 'student_code_evaluator.backend.app'>>
+inmemory_db = <sqlite3.Connection object at 0x1481e8130>
+
+    def test_save_conversation_success(client, inmemory_db):
+        response = client.post('/save_conversation', json={
+            "conversation_id": "test_conv_1",
+            "messages": [
+                {"role": "user", "content": "Hello"},
+                {"role": "assistant", "content": "Hi there"}
+            ]
+        })
+>       assert response.status_code == 201
+E       assert 400 == 201
+E        +  where 400 = <WrapperTestResponse streamed [400 BAD REQUEST]>.status_code
+
+student_code_evaluator/tests/backend/test_app.py:57: AssertionError
+_____________________ test_save_conversation_missing_data ______________________
+
+client = <FlaskClient <Flask 'student_code_evaluator.backend.app'>>
+
+    def test_save_conversation_missing_data(client):
+        response = client.post('/save_conversation', json={})
+        assert response.status_code == 400
+>       assert response.get_json() == {"error": "Missing conversation_id or messages"}
+E       AssertionError: assert {'error': 'Mi..., or user_id'} == {'error': 'Mi... or messages'}
+E         
+E         Differing items:
+E         {'error': 'Missing conversation_id, messages, or user_id'} != {'error': 'Missing conversation_id or messages'}
+E         Use -v to get more diff
+
+student_code_evaluator/tests/backend/test_app.py:77: AssertionError
+__________________________ test_save_feedback_success __________________________
+
+client = <FlaskClient <Flask 'student_code_evaluator.backend.app'>>
+inmemory_db = <sqlite3.Connection object at 0x1481e8400>
+
+    def test_save_feedback_success(client, inmemory_db):
+        # First, create a conversation to link feedback to
+        client.post('/save_conversation', json={
+            "conversation_id": "test_conv_feedback",
+            "messages": [{"role": "user", "content": "Initial message"}]
+        })
+    
+        response = client.post('/save_feedback', json={
+            "conversation_id": "test_conv_feedback",
+            "feedback": "This is a test feedback."
+        })
+>       assert response.status_code == 201
+E       assert 400 == 201
+E        +  where 400 = <WrapperTestResponse streamed [400 BAD REQUEST]>.status_code
+
+student_code_evaluator/tests/backend/test_app.py:98: AssertionError
+_______________________ test_save_feedback_missing_data ________________________
+
+client = <FlaskClient <Flask 'student_code_evaluator.backend.app'>>
+
+    def test_save_feedback_missing_data(client):
+        response = client.post('/save_feedback', json={})
+        assert response.status_code == 400
+>       assert response.get_json() == {"error": "Missing conversation_id or feedback"}
+E       AssertionError: assert {'error': 'Mi..., or user_id'} == {'error': 'Mi... or feedback'}
+E         
+E         Differing items:
+E         {'error': 'Missing conversation_id, feedback, or user_id'} != {'error': 'Missing conversation_id or feedback'}
+E         Use -v to get more diff
+
+student_code_evaluator/tests/backend/test_app.py:111: AssertionError
+_________________ test_save_feedback_nonexistent_conversation __________________
+
+client = <FlaskClient <Flask 'student_code_evaluator.backend.app'>>
+
+    def test_save_feedback_nonexistent_conversation(client):
+        response = client.post('/save_feedback', json={
+            "conversation_id": "nonexistent_conv",
+            "feedback": "Feedback for non-existent"
+        })
+>       assert response.status_code == 404
+E       assert 400 == 404
+E        +  where 400 = <WrapperTestResponse streamed [400 BAD REQUEST]>.status_code
+
+student_code_evaluator/tests/backend/test_app.py:126: AssertionError
+________________________ test_get_conversations_success ________________________
+
+client = <FlaskClient <Flask 'student_code_evaluator.backend.app'>>
+inmemory_db = <sqlite3.Connection object at 0x1481e9e40>
+
+    def test_get_conversations_success(client, inmemory_db):
+        # Add some test data using the client
+        client.post('/save_conversation', json={
+            "conversation_id": "conv_get_1",
+            "messages": [{"role": "user", "content": "Msg 1"}, {"role": "assistant", "content": "Resp 1"}]
+        })
+        client.post('/save_feedback', json={
+            "conversation_id": "conv_get_1",
+            "feedback": "Feedback 1"
+        })
+        client.post('/save_conversation', json={
+            "conversation_id": "conv_get_2",
+            "messages": [{"role": "user", "content": "Msg 2"}]
+        })
+    
+        response = client.get('/get_conversations')
+        assert response.status_code == 200
+        data = response.get_json()
+    
+        assert isinstance(data, list)
+>       assert len(data) == 2 # Should get both conversations
+E       assert 0 == 2
+E        +  where 0 = len([])
+
+student_code_evaluator/tests/backend/test_app.py:149: AssertionError
+=========================== short test summary info ============================
+FAILED student_code_evaluator/tests/backend/test_app.py::test_save_conversation_success
+FAILED student_code_evaluator/tests/backend/test_app.py::test_save_conversation_missing_data
+FAILED student_code_evaluator/tests/backend/test_app.py::test_save_feedback_success
+FAILED student_code_evaluator/tests/backend/test_app.py::test_save_feedback_missing_data
+FAILED student_code_evaluator/tests/backend/test_app.py::test_save_feedback_nonexistent_conversation
+FAILED student_code_evaluator/tests/backend/test_app.py::test_get_conversations_success
+========================= 6 failed, 8 passed in 0.15s ==========================

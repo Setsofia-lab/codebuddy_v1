@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.2, pytest-8.3.4, pluggy-1.5.0
+Fugue tests will be initialized with options:
+rootdir: /Users/samuelsetsofia/dev/codebuddy_v1
+plugins: fugue-0.9.1, anyio-4.6.2.post1
+collected 2 items
+
+student_code_evaluator/tests/integration/test_integration.py ..          [100%]
+
+============================== 2 passed in 0.11s ===============================

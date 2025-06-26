@@ -5,6 +5,10 @@ import uuid
 import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
+import re
+import time
+from datetime import datetime, timedelta
+import streamlit.components.v1 as components
 
 # Load environment variables
 load_dotenv()
@@ -14,6 +18,77 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
     st.error("GOOGLE_API_KEY not found in environment variables. Please set it.")
     st.stop()
+
+# --- Initialize session state variables ---
+if "show_feedback_form" not in st.session_state:
+    st.session_state.show_feedback_form = False
+if "evaluation_started" not in st.session_state:
+    st.session_state.evaluation_started = False
+if "evaluation_complete" not in st.session_state:
+    st.session_state.evaluation_complete = False
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "user_id" not in st.session_state:
+    st.session_state.user_id = None
+if "conversation_id" not in st.session_state:
+    st.session_state.conversation_id = None
+if "last_active" not in st.session_state:
+    st.session_state.last_active = None
+
+# --- Persistent Login with 15-Minute Timeout ---
+COOKIE_KEY = "codebuddy_user"
+TIMEOUT_MINUTES = 15
+
+def set_cookie(key, value, max_age):
+    # Set a cookie using a hidden iframe hack (Streamlit limitation)
+    components.html(f"""
+        <script>
+            document.cookie = '{key}={value}; max-age={max_age}; path=/';
+        </script>
+    """, height=0)
+
+def get_cookie(key):
+    # Get a cookie value using JS and Streamlit components
+    result = components.html(f"""
+        <script>
+            const value = document.cookie.split('; ').find(row => row.startsWith('{key}='));
+            if (value) {{
+                const val = value.split('=')[1];
+                window.parent.postMessage(val, '*');
+            }} else {{
+                window.parent.postMessage('', '*');
+            }}
+        </script>
+    """, height=0)
+    return st.session_state.get(f"cookie_{key}", None)
+
+# --- Login Screen ---
+if "user_id" not in st.session_state:
+    st.session_state.user_id = None
+
+if not st.session_state.user_id:
+    st.title("Login to CodeBuddy")
+    user_input = st.text_input("Enter your username or email:")
+    if st.button("Login"):
+        if user_input:
+            st.session_state.user_id = user_input.strip()
+            st.session_state.last_active = time.time()
+            # Set cookie (simulate)
+            # set_cookie(COOKIE_KEY, f"{st.session_state.user_id}|{int(st.session_state.last_active)}", TIMEOUT_MINUTES*60)
+            st.rerun()
+        else:
+            st.warning("Please enter a username or email to continue.")
+    st.stop()
+else:
+    # Check inactivity timeout
+    now = time.time()
+    if st.session_state.last_active and now - st.session_state.last_active > TIMEOUT_MINUTES*60:
+        st.session_state.user_id = None
+        st.session_state.last_active = None
+        st.warning("Session expired due to inactivity. Please log in again.")
+        st.rerun()
+    else:
+        st.session_state.last_active = now
 
 # --- Gemini LLM Setup ---
 @st.cache_resource
@@ -29,15 +104,15 @@ def get_gemini_llm():
 llm = get_gemini_llm()
 
 # --- Backend Integration ---
-# Use host.docker.internal to connect to the host machine from within the Docker container
-BACKEND_URL = "http://host.docker.internal:5000" # Replace with your backend URL in deployment
+BACKEND_URL = "http://backend:5000"
 
 def send_conversation_to_backend(conversation_id, messages):
     """Sends conversation data to the backend API."""
     try:
         response = requests.post(f"{BACKEND_URL}/save_conversation", json={
             "conversation_id": conversation_id,
-            "messages": messages
+            "messages": messages,
+            "user_id": st.session_state.user_id
         })
         response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
         st.sidebar.success("Conversation saved to backend.") # Optional: show success message
@@ -76,19 +151,37 @@ st.title("Welcome to codebuddy - Code Evaluator")
 
 st.write("Please submit your code file below for evaluation and feedback.")
 
-# Initialize chat history in session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# --- Feedback Logic ---
+# Confirmation phrases for evaluation completion
+eval_complete_phrases = [
+    r"i am ok with the evaluation",
+    r"i accept this evaluation",
+    r"this feedback is okay with me",
+    r"i agree with the assessment",
+    r"i am happy with the evaluation",
+    r"i am satisfied with the evaluation",
+    r"this evaluation is fine",
+    r"i accept the feedback"
+]
 
-# Initialize evaluation started flag
-if "evaluation_started" not in st.session_state:
-    st.session_state.evaluation_started = False
+def check_evaluation_complete(messages):
+    for msg in messages[::-1]:
+        if msg["role"] == "user":
+            for phrase in eval_complete_phrases:
+                if re.search(phrase, msg["content"], re.IGNORECASE):
+                    return True
+    return False
 
-if "evaluation_complete" not in st.session_state:
-    st.session_state.evaluation_complete = False
+# Auto-popup feedback form if evaluation is complete and not yet shown
+if (
+    st.session_state.get("evaluation_started")
+    and not st.session_state.get("show_feedback_form")
+    and check_evaluation_complete(st.session_state.get("messages", []))
+):
+    st.session_state.show_feedback_form = True
 
-if "show_feedback_form" not in st.session_state:
-    st.session_state.show_feedback_form = False
+# --- Sidebar Feedback Button (Google Form) ---
+st.sidebar.link_button("💬 Give Feedback", "https://docs.google.com/document/d/1eSGU75AW40hqx6MofylH8aYvR38tuC_7uHa27WNpAZE/edit?usp=sharing")
 
 # File uploader for student code submission
 uploaded_file = st.file_uploader("Upload your code file:", type=['py', 'ipynb', 'js', 'txt', 'matlab'])
@@ -175,12 +268,6 @@ if st.button("Start Evaluation"):
     else:
         st.warning("Please submit your code to start the evaluation.")
 
-# Button to trigger feedback form (appears after evaluation starts)
-if st.session_state.evaluation_started and not st.session_state.show_feedback_form:
-    if st.button("Provide Feedback"):
-        st.session_state.show_feedback_form = True
-        st.rerun()
-
 # Chat input for student responses - moved before displaying messages
 if st.session_state.evaluation_started and uploaded_file is not None:
     student_response = st.chat_input("Respond to the feedback:")
@@ -261,47 +348,33 @@ if st.session_state.evaluation_started:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-# Feedback Section (displayed in sidebar as a simulated pop-up)
-if st.session_state.show_feedback_form:
-    with st.sidebar:
-        st.subheader("Provide Feedback")
-        st.write("Please answer the following questions about your experience:")
+# --- My History Section ---
+st.sidebar.markdown("---")
+if st.sidebar.button("My History"):
+    st.session_state.show_history = True
+else:
+    if "show_history" not in st.session_state:
+        st.session_state.show_history = False
+    elif not st.session_state.show_history:
+        st.session_state.show_history = False
 
-        # Feedback questions
-        q1 = st.text_input("1. How satisfied are you with the code evaluation?")
-        q2 = st.text_input("2. Was the feedback provided helpful?")
-        q3 = st.text_input("3. Was the conversation easy to follow?")
-        q4 = st.text_input("4. How likely are you to use this tool again?")
-        q5 = st.text_input("5. Do you have any suggestions for improvement?")
-        q6 = st.text_input("6. Any additional comments?")
-
-        # Button to submit feedback
-        if st.button("Submit Feedback"):
-            if st.session_state.evaluation_started and st.session_state.conversation_id:
-                feedback_data = {
-                    "q1": q1,
-                    "q2": q2,
-                    "q3": q3,
-                    "q4": q4,
-                    "q5": q5,
-                    "q6": q6
-                }
-                send_feedback_to_backend(st.session_state.conversation_id, feedback_data)
-                st.session_state.show_feedback_form = False # Hide form after submission
-                st.rerun()
-            else:
-                st.warning("Please start an evaluation before submitting feedback.")
-
-# Function to send feedback to the backend
-def send_feedback_to_backend(conversation_id, feedback):
-    """Sends feedback data to the backend API."""
+if st.session_state.get("show_history", False):
+    st.sidebar.subheader("My Conversation History")
     try:
-        # Send feedback as a JSON string within the 'feedback' field
-        response = requests.post(f"{BACKEND_URL}/save_feedback", json={
-            "conversation_id": conversation_id,
-            "feedback": json.dumps(feedback) # Convert feedback dict to JSON string
-        })
-        response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
-        st.sidebar.success("Feedback submitted successfully.") # Optional: show success message
-    except requests.exceptions.RequestException as e:
-        st.sidebar.error(f"Error submitting feedback: {e}") # Optional: show error message
+        resp = requests.get(f"{BACKEND_URL}/get_conversations", params={"user_id": st.session_state.user_id})
+        if resp.status_code == 200:
+            conversations = resp.json()
+            if not conversations:
+                st.sidebar.info("You don't have any chat history yet.")
+            else:
+                for conv in conversations:
+                    with st.sidebar.expander(f"Conversation {conv['id']} ({conv['timestamp'][:19]})"):
+                        st.markdown("**Messages:**")
+                        for msg in conv.get("messages", []):
+                            st.markdown(f"- **{msg['role'].capitalize()}:** {msg['content']}")
+        else:
+            st.sidebar.error(f"Failed to fetch history: {resp.text}")
+    except Exception as e:
+        st.sidebar.error(f"Error fetching history: {e}")
+    if st.sidebar.button("Close History"):
+        st.session_state.show_history = False

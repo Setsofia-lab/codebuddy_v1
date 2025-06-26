@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-DATABASE = 'chat_history.db'
+DATABASE = './chat_history.db'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -38,9 +38,10 @@ def save_conversation():
     data = request.json
     conversation_id = data.get('conversation_id')
     messages = data.get('messages') # List of {"role": "...", "content": "..."}
+    user_id = data.get('user_id')
 
-    if not conversation_id or not messages:
-        return jsonify({"error": "Missing conversation_id or messages"}), 400
+    if not conversation_id or not messages or not user_id:
+        return jsonify({"error": "Missing conversation_id, messages, or user_id"}), 400
 
     db = get_db()
     cursor = db.cursor()
@@ -50,7 +51,7 @@ def save_conversation():
         cursor.execute("SELECT id FROM conversations WHERE id = ?", (conversation_id,))
         existing_conversation = cursor.fetchone()
         if existing_conversation is None:
-            cursor.execute("INSERT INTO conversations (id) VALUES (?)", (conversation_id,))
+            cursor.execute("INSERT INTO conversations (id, user_id) VALUES (?, ?)", (conversation_id, user_id))
 
         # Insert messages
         for message in messages:
@@ -68,9 +69,10 @@ def save_feedback():
     data = request.json
     conversation_id = data.get('conversation_id')
     feedback_text = data.get('feedback')
+    user_id = data.get('user_id')
 
-    if not conversation_id or not feedback_text:
-        return jsonify({"error": "Missing conversation_id or feedback"}), 400
+    if not conversation_id or not feedback_text or not user_id:
+        return jsonify({"error": "Missing conversation_id, feedback, or user_id"}), 400
 
     db = get_db()
     cursor = db.cursor()
@@ -82,9 +84,9 @@ def save_feedback():
         if existing_conversation is None:
             return jsonify({"error": f"Conversation with ID {conversation_id} not found"}), 404
 
-        # Insert feedback, linking to the conversation
-        cursor.execute("INSERT INTO feedback (conversation_id, feedback_text) VALUES (?, ?)",
-                       (conversation_id, feedback_text))
+        # Insert feedback, linking to the conversation and user
+        cursor.execute("INSERT INTO feedback (conversation_id, user_id, feedback_text) VALUES (?, ?, ?)",
+                       (conversation_id, user_id, feedback_text))
 
         db.commit()
         return jsonify({"success": True}), 201
@@ -94,27 +96,24 @@ def save_feedback():
 
 @app.route('/get_conversations', methods=['GET'])
 def get_conversations():
+    user_id = request.args.get('user_id')
     db = get_db()
     cursor = db.cursor()
 
     try:
-        cursor.execute("SELECT * FROM conversations ORDER BY timestamp DESC")
+        if user_id:
+            cursor.execute("SELECT * FROM conversations WHERE user_id = ? ORDER BY timestamp DESC", (user_id,))
+        else:
+            cursor.execute("SELECT * FROM conversations ORDER BY timestamp DESC")
         conversations = cursor.fetchall()
 
         conversations_list = []
         for conversation in conversations:
             conversation_data = dict(conversation)
-            
             # Get messages for the conversation
             cursor.execute("SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC", (conversation['id'],))
             messages = cursor.fetchall()
             conversation_data['messages'] = [dict(message) for message in messages]
-
-            # Get feedback for the conversation
-            cursor.execute("SELECT * FROM feedback WHERE conversation_id = ? ORDER BY timestamp ASC", (conversation['id'],))
-            feedback = cursor.fetchall()
-            conversation_data['feedback'] = [dict(f) for f in feedback]
-
             conversations_list.append(conversation_data)
 
         return jsonify(conversations_list), 200
