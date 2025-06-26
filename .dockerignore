@@ -50,6 +50,7 @@ README.md
 # Tests
 tests/
 test_*
+test_deployment.py
 
 # Data files that might be large
 *.db

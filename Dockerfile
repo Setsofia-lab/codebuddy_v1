@@ -20,6 +20,9 @@ RUN pip install --no-cache-dir -r backend_requirements.txt && \
 # Copy the entire application
 COPY student_code_evaluator/ ./student_code_evaluator/
 
+# Set proper permissions for the backend directory
+RUN chmod 755 /app/student_code_evaluator/backend
+
 # Set environment variable to avoid Streamlit asking for a browser
 ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 

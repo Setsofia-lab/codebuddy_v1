@@ -169,9 +169,21 @@ def delete_feedback(conversation_id):
         db.rollback()
         return jsonify({"error": f"Database error: {e}"}), 500
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint to verify the backend is running."""
+    try:
+        # Test database connection
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        return jsonify({"status": "healthy", "database": "connected"}), 200
+    except Exception as e:
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
 
 if __name__ == '__main__':
-    # In a real deployment, you'd use a production-ready server like Gunicorn or uWSGI
-    # For simple local testing:
-    # init_db() # Uncomment to initialize db on first run if not using flask initdb
-    app.run(debug=True, port=5000) # Run on a different port than Streamlit
+    # Initialize database on startup
+    init_db()
+    # Run in production mode for deployment
+    app.run(host='0.0.0.0', port=5000, debug=False)
