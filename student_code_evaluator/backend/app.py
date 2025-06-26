@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 import sqlite3
 import os
 
@@ -8,8 +8,23 @@ DATABASE = './chat_history.db'
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
+        # Ensure the database directory exists
+        db_dir = os.path.dirname(DATABASE)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+        
         db = g._database = sqlite3.connect(DATABASE)
         db.row_factory = sqlite3.Row # Access columns by name
+        
+        # Initialize database if it doesn't exist
+        try:
+            cursor = db.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'")
+            if not cursor.fetchone():
+                init_db()
+        except Exception as e:
+            print(f"Database initialization error: {e}")
+            
     return db
 
 @app.teardown_appcontext
@@ -30,8 +45,6 @@ def initdb_command():
     """Initializes the database."""
     init_db()
     print('Initialized the database.')
-
-from flask import g
 
 @app.route('/save_conversation', methods=['POST'])
 def save_conversation():
