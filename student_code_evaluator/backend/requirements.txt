@@ -6,6 +6,7 @@ langchain
 langchain-google-genai
 nbformat
 Flask
+flask-cors
 requests
 gunicorn
 gunicorn

@@ -104,7 +104,8 @@ def get_gemini_llm():
 llm = get_gemini_llm()
 
 # --- Backend Integration ---
-BACKEND_URL = "http://localhost:5000"
+# Use environment variable for backend URL, fallback to localhost for local development
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:5000")
 
 def send_conversation_to_backend(conversation_id, messages):
     """Sends conversation data to the backend API."""

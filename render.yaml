@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: codebuddy-backend
+    env: python
+    rootDir: student_code_evaluator/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+    healthCheckPath: /health 
