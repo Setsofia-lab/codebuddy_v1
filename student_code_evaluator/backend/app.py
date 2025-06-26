@@ -15,15 +15,6 @@ def get_db():
         
         db = g._database = sqlite3.connect(DATABASE)
         db.row_factory = sqlite3.Row # Access columns by name
-        
-        # Initialize database if it doesn't exist
-        try:
-            cursor = db.cursor()
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'")
-            if not cursor.fetchone():
-                init_db()
-        except Exception as e:
-            print(f"Database initialization error: {e}")
             
     return db
 
@@ -34,11 +25,25 @@ def close_db(error):
         db.close()
 
 def init_db():
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+    """Initialize the database with schema."""
+    try:
+        db = sqlite3.connect(DATABASE)
+        cursor = db.cursor()
+        
+        # Check if tables already exist
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='conversations'")
+        if not cursor.fetchone():
+            # Read and execute schema
+            with open('schema.sql', 'r') as f:
+                db.executescript(f.read())
+            db.commit()
+            print("Database initialized successfully")
+        else:
+            print("Database already exists")
+        
+        db.close()
+    except Exception as e:
+        print(f"Database initialization error: {e}")
 
 @app.cli.command('initdb')
 def initdb_command():
@@ -182,8 +187,21 @@ def health_check():
     except Exception as e:
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
 
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint for the API."""
+    return jsonify({
+        "message": "CodeBuddy Backend API",
+        "version": "1.0",
+        "endpoints": {
+            "health": "/health",
+            "save_conversation": "/save_conversation",
+            "get_conversations": "/get_conversations",
+            "save_feedback": "/save_feedback"
+        },
+        "status": "running"
+    }), 200
+
 if __name__ == '__main__':
-    # Initialize database on startup
-    init_db()
     # Run in production mode for deployment
     app.run(host='0.0.0.0', port=5000, debug=False)

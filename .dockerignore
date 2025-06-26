@@ -51,6 +51,7 @@ README.md
 tests/
 test_*
 test_deployment.py
+verify_deployment.py
 
 # Data files that might be large
 *.db

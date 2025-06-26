@@ -26,22 +26,34 @@ RUN chmod 755 /app/student_code_evaluator/backend
 # Set environment variable to avoid Streamlit asking for a browser
 ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
-# Create a startup script
+# Create a startup script that runs both services properly
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
+echo "Starting CodeBuddy services..."\n\
+\n\
+# Initialize database first\n\
+cd /app/student_code_evaluator/backend\n\
+python -c "from app import init_db; init_db()"\n\
+\n\
 # Start backend in background\n\
+echo "Starting Flask backend on port 5000..."\n\
 cd /app/student_code_evaluator/backend\n\
 python app.py &\n\
 BACKEND_PID=$!\n\
 \n\
-# Wait a moment for backend to start\n\
-sleep 3\n\
+# Wait for backend to start\n\
+sleep 5\n\
 \n\
 # Start frontend\n\
+echo "Starting Streamlit frontend on port 8501..."\n\
 cd /app/student_code_evaluator/app\n\
-streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0 &\n\
+streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0 --server.headless=true &\n\
 FRONTEND_PID=$!\n\
+\n\
+echo "Both services started successfully!"\n\
+echo "Backend: http://localhost:5000"\n\
+echo "Frontend: http://localhost:8501"\n\
 \n\
 # Wait for both processes\n\
 wait $BACKEND_PID $FRONTEND_PID' > /app/start.sh && chmod +x /app/start.sh
